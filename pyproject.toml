@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "raspberry-grove-pi-service"
+version = "0.1.0"
+description = "Service for Raspberry Pi using GrovePi+"
+authors = ["quantumwaffy <sashchystyh@yandex.ru>"]
+license = "MIT"
+readme = "README.md"
+packages = [{include = "raspberry_grove_pi_service"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+# must be installed on Raspberry Pi via https://github.com/DexterInd/RFR_Tools/blob/master/miscellaneous/setup.py
+# and https://github.com/DexterInd/GrovePi/blob/master/Software/Python/setup.py
+#grovepi = "^1.4.1"
+#with:
+#numpy = "1.22.1"
+#scipy = "1.11.2"
+pre-commit = "^3.4.0"
+
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
