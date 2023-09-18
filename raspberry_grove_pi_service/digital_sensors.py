@@ -32,6 +32,13 @@ class Buzzer(BaseDigitalSensor):
 
 
 class _TemperatureHumiditySensor(BaseDigitalSensor):
+    def __init__(self, _port: int) -> None:
+        super(BaseDigitalSensor, self).__init__(_port)
+
+    @staticmethod
+    def _get_value(value: float | str) -> float | None:
+        return value if value != "nan" else None
+
     def on(self) -> None:
         ...
 
@@ -41,11 +48,11 @@ class _TemperatureHumiditySensor(BaseDigitalSensor):
 
 class TemperatureSensor(_TemperatureHumiditySensor):
     @utils.sensor_error_handler
-    def get_data(self) -> int:
-        return dht(self._port, 0)[0]
+    def get_data(self) -> float | None:
+        return self._get_value(dht(self._port, 0)[0])
 
 
 class HumiditySensor(_TemperatureHumiditySensor):
     @utils.sensor_error_handler
-    def get_data(self) -> int:
-        return dht(self._port, 0)[1]
+    def get_data(self) -> float | None:
+        return self._get_value(dht(self._port, 0)[1])

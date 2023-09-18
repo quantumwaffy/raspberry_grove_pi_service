@@ -1,5 +1,6 @@
 import abc
 import asyncio
+import time
 from typing import Type
 
 import websockets
@@ -16,6 +17,7 @@ class AbstractSender(abc.ABC):
     def __init__(self, ws_connected_pin: int, sensor_pins: dict[consts.Sensor, int]) -> None:
         self._ws_indicator: base.AbstractSensor = self._ws_indicator_cls(ws_connected_pin)
         self._data_collector: data_collectors.BaseDataCollector = data_collectors.BaseDataCollector(sensor_pins)
+        time.sleep(1)
 
     @abc.abstractmethod
     async def run(self) -> None:

@@ -5,7 +5,7 @@ from . import analog_sensors, base, consts, digital_sensors, schemas
 
 class BaseDataCollector:
     _schema_cls: Type[schemas.SensorData] = schemas.SensorData
-    _sensors_cls: dict[str, Type[base.AbstractSensor]] = {
+    _sensors_cls: dict[consts.Sensor, Type[base.AbstractSensor]] = {
         consts.Sensor.temperature: digital_sensors.TemperatureSensor,
         consts.Sensor.humidity: digital_sensors.HumiditySensor,
         consts.Sensor.sound: analog_sensors.SoundSensor,
@@ -14,7 +14,9 @@ class BaseDataCollector:
 
     def __init__(self, pin_data: dict[consts.Sensor, int]) -> None:
         self._sensors: dict[str, base.AbstractSensor] = {
-            _type: handler_cls(pin) for _type, handler_cls in self._sensors_cls.items() if (pin := pin_data.get(_type))
+            _type.name: handler_cls(pin)
+            for _type, handler_cls in self._sensors_cls.items()
+            if (pin := pin_data.get(_type))
         }
 
     @property
