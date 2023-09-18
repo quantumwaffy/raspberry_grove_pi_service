@@ -4,10 +4,10 @@ from core import mixins as core_mixins
 
 
 class AppConfig(core_mixins.EnvSettingsMixin):
-    SERVER_URL: str = ""
+    SERVER_URL: str
+    LOG_PATH: str
     SEND_INTERVAL: float = 3
     RESTART_INTERVAL: float = 60
-    LOG_PATH: str = "/var/log/raspberry_grove_pi_service.log"
 
 
 class Config(BaseSettings):
