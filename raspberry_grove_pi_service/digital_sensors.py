@@ -1,20 +1,20 @@
 from grovepi import dht, digitalWrite, pinMode
 
-from . import spec_types, utils
+from . import base, spec_types, utils
 
 
-class BaseDigitalSensor:
+class BaseDigitalSensor(base.AbstractSensor):
     def __init__(self, _port: int) -> None:
-        self._port: int = _port
+        super().__init__(_port)
         pinMode(_port, "OUTPUT")
 
     @utils.sensor_error_handler
-    def on(self) -> spec_types.SensorResult:
+    def on(self) -> bool:
         digitalWrite(self._port, 1)
         return True
 
     @utils.sensor_error_handler
-    def off(self) -> spec_types.SensorResult:
+    def off(self) -> bool:
         digitalWrite(self._port, 0)
         return False
 
@@ -31,13 +31,21 @@ class Buzzer(BaseDigitalSensor):
     ...
 
 
-class TempHumSensor(BaseDigitalSensor):
+class _TemperatureHumiditySensor(BaseDigitalSensor):
+    def on(self) -> None:
+        ...
+
+    def off(self) -> None:
+        ...
+
+
+class TemperatureSensor(_TemperatureHumiditySensor):
     @utils.sensor_error_handler
-    def get_data(self) -> list[spec_types.Temperature, spec_types.Humidity]:
-        return dht(self._port, 0)
+    def get_data(self) -> int:
+        return dht(self._port, 0)[0]
 
-    def on(self) -> spec_types.SensorResult:
-        return False
 
-    def off(self) -> spec_types.SensorResult:
-        return False
+class HumiditySensor(_TemperatureHumiditySensor):
+    @utils.sensor_error_handler
+    def get_data(self) -> int:
+        return dht(self._port, 0)[1]

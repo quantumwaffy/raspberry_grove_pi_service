@@ -16,6 +16,9 @@ python = "^3.11"
 #numpy = "1.22.1"
 #scipy = "1.11.2"
 pre-commit = "^3.4.0"
+pydantic = "^2.3.0"
+websockets = "^11.0.3"
+python-dotenv = "^1.0.0"
 
 
 
