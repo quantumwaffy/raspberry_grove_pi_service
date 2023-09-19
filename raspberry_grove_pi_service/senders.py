@@ -6,49 +6,30 @@ from typing import Type
 import websockets
 
 from config import CONFIG
-from logger import logger
 
-from . import base, consts, data_collectors, digital_sensors, schemas
+from . import consts, data_collectors, interactors, schemas, ws_connectors
 
 
-class AbstractSender(abc.ABC):
-    _data_collector_cls: Type[data_collectors.BaseDataCollector] = data_collectors.BaseDataCollector
+class AbstractDataSender(interactors.AbstractInteractor):
+    _ws_url = CONFIG.APP.SERVER_URL_TO_SEND
+    _restart_interval = CONFIG.APP.RESTART_INTERVAL_TO_SEND
 
     def __init__(self, ws_connected_pin: int, sensor_pins: dict[consts.Sensor, int]) -> None:
-        self._ws_indicator: base.AbstractSensor = self._ws_indicator_cls(ws_connected_pin)
-        self._data_collector: data_collectors.BaseDataCollector = data_collectors.BaseDataCollector(sensor_pins)
+        super().__init__(ws_connected_pin, sensor_pins)
+        self._data_collector: data_collectors.BaseDataCollector = self._data_collector_cls(sensor_pins)
         time.sleep(1)
 
-    @abc.abstractmethod
-    async def run(self) -> None:
-        ...
-
-    @abc.abstractmethod
-    def _ws_check(self, is_connected: bool) -> None:
-        ...
+    async def _run(self, ws: websockets.WebSocketClientProtocol) -> None:
+        sensors_data: schemas.SensorData = self._data_collector.data
+        await ws.send(sensors_data.model_dump_json())
+        await asyncio.sleep(CONFIG.APP.SEND_INTERVAL)
 
     @property
     @abc.abstractmethod
-    def _ws_indicator_cls(self) -> Type[base.AbstractSensor]:
+    def _data_collector_cls(self) -> Type[data_collectors.BaseDataCollector]:
         ...
 
 
-class BaseDataSender(AbstractSender):
-    _ws_indicator_cls = digital_sensors.LEDSocket
-
-    async def run(self) -> None:
-        while True:
-            try:
-                async with websockets.connect(CONFIG.APP.SERVER_URL) as ws:
-                    self._ws_check(True)
-                    while True:
-                        sensors_data: schemas.SensorData = self._data_collector.data
-                        await ws.send(sensors_data.model_dump_json())
-                        await asyncio.sleep(CONFIG.APP.SEND_INTERVAL)
-            except Exception as e:
-                self._ws_check(False)
-                logger.error(e)
-                await asyncio.sleep(CONFIG.APP.RESTART_INTERVAL)
-
-    def _ws_check(self, is_connected: bool) -> None:
-        self._ws_indicator.on() if is_connected else self._ws_indicator.off()
+class BaseLEDConnectorDataSender(AbstractDataSender):
+    _data_collector_cls: Type[data_collectors.BaseDataCollector] = data_collectors.BaseDataCollector
+    _ws_connector_cls = ws_connectors.LEDWSConnector
