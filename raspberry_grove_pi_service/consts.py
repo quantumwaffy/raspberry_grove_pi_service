@@ -11,5 +11,5 @@ class Sensor(StrEnum):
 
 
 class TaskAction(StrEnum):
-    on = "on"
-    off = "off"
+    ON = "on"
+    OFF = "off"

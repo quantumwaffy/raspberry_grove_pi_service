@@ -11,5 +11,5 @@ class SensorData(BaseModel):
 
 
 class RunnerData(BaseModel):
-    handler: str
+    task: str
     action: consts.TaskAction

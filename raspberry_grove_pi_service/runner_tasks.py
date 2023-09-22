@@ -23,7 +23,7 @@ class AbstractSimpleTask(AbstractTask):
         ...
 
     async def execute(self, action: consts.TaskAction) -> None:
-        self._sensor.on() if action == consts.TaskAction.on else self._sensor.off()
+        self._sensor.on() if action == consts.TaskAction.ON else self._sensor.off()
 
 
 class LEDSocketTask(AbstractSimpleTask):

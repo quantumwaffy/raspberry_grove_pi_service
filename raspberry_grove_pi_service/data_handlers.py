@@ -62,19 +62,19 @@ class BaseRunner(AbstractSensorsHandler):
         }
 
     def execute(self, msg: schemas.RunnerData) -> Any:
-        handler_name: str = msg.handler
+        task_name: str = msg.task
         action: consts.TaskAction = msg.action
 
-        if not (runner_task := self._tasks.get(handler_name)):
+        if not (runner_task := self._tasks.get(task_name)):
             return None
 
         if (
-            (in_process_async_task := self._run_tasks.get(handler_name))
+            (in_process_async_task := self._run_tasks.get(task_name))
             and not in_process_async_task.done()
-            and action == action.off
+            and action == action.OFF
         ):
             in_process_async_task.cancel()
-            del self._run_tasks[handler_name]
+            del self._run_tasks[task_name]
         else:
             async_task: asyncio.Task = asyncio.create_task(runner_task.execute(action))
-            self._run_tasks[handler_name] = async_task
+            self._run_tasks[task_name] = async_task
