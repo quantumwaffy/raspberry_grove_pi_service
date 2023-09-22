@@ -7,6 +7,7 @@ class Sensor(StrEnum):
     sound = "snd"
     light = "lght"
     led = "led"
+    buzzer = "buzz"
 
 
 class TaskAction(StrEnum):

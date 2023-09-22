@@ -47,8 +47,12 @@ class BaseRunner(AbstractSensorsHandler):
     _schema_cls = schemas.RunnerData
     _sensors_cls = {
         consts.Sensor.led: digital_sensors.LEDSocket,
+        consts.Sensor.buzzer: digital_sensors.Buzzer,
     }
-    _available_tasks: tuple[Type[runner_tasks.AbstractTask], ...] = (runner_tasks.LEDSocketTask,)
+    _available_tasks: tuple[Type[runner_tasks.AbstractTask], ...] = (
+        runner_tasks.LEDSocketTask,
+        runner_tasks.BuzzerTask,
+    )
     _run_tasks: dict[str, asyncio.Task] = {}
 
     def __init__(self, pin_data: dict[consts.Sensor, int]) -> None:

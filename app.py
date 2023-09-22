@@ -14,6 +14,7 @@ if __name__ == "__main__":
     }
     receiver_sensors_pin_data: dict[consts.Sensor, int] = {
         consts.Sensor.led: 6,
+        consts.Sensor.buzzer: 5,
     }
 
     ws_connect_sender_checker_pin: int = 3

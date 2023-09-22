@@ -28,3 +28,7 @@ class AbstractSimpleTask(AbstractTask):
 
 class LEDSocketTask(AbstractSimpleTask):
     _sensor_name = consts.Sensor.led.name
+
+
+class BuzzerTask(AbstractSimpleTask):
+    _sensor_name = consts.Sensor.buzzer.name
