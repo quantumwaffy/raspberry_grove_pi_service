@@ -1,9 +1,10 @@
 import abc
+import asyncio
 from typing import Any, Type, Unpack
 
 from pydantic import BaseModel
 
-from . import analog_sensors, base, consts, digital_sensors, schemas
+from . import analog_sensors, base, consts, digital_sensors, runner_tasks, schemas
 
 
 class AbstractSensorsHandler(abc.ABC):
@@ -47,6 +48,29 @@ class BaseRunner(AbstractSensorsHandler):
     _sensors_cls = {
         consts.Sensor.led: digital_sensors.LEDSocket,
     }
+    _available_tasks: tuple[Type[runner_tasks.AbstractTask], ...] = (runner_tasks.LEDSocketTask,)
+    _run_tasks: dict[str, asyncio.Task] = {}
+
+    def __init__(self, pin_data: dict[consts.Sensor, int]) -> None:
+        super().__init__(pin_data)
+        self._tasks: dict[str, runner_tasks.AbstractTask] = {
+            task.__name__: task(self._sensors) for task in self._available_tasks
+        }
 
     def execute(self, msg: schemas.RunnerData) -> Any:
-        ...
+        handler_name: str = msg.handler
+        action: consts.TaskAction = msg.action
+
+        if not (runner_task := self._tasks.get(handler_name)):
+            return None
+
+        if (
+            (in_process_async_task := self._run_tasks.get(handler_name))
+            and not in_process_async_task.done()
+            and action == action.off
+        ):
+            in_process_async_task.cancel()
+            del self._run_tasks[handler_name]
+        else:
+            async_task: asyncio.Task = asyncio.create_task(runner_task.execute(action))
+            self._run_tasks[handler_name] = async_task

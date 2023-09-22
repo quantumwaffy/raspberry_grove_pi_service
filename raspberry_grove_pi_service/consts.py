@@ -9,6 +9,6 @@ class Sensor(StrEnum):
     led = "led"
 
 
-class SensorState(StrEnum):
+class TaskAction(StrEnum):
     on = "on"
     off = "off"

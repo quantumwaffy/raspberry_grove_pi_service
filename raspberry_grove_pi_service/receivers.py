@@ -3,7 +3,6 @@ import json
 import websockets
 
 from config import CONFIG
-from logger import logger
 
 from . import data_handlers, interactors, schemas, ws_connectors
 
@@ -16,7 +15,8 @@ class AbstractDataReceiver(interactors.AbstractInteractor):
     async def _run(self, ws: websockets.WebSocketClientProtocol) -> None:
         msg: str = await ws.recv()
         msg_data: schemas.RunnerData = schemas.RunnerData(**json.loads(msg))
-        logger.info(msg_data)
+        self._data_handler.execute()
+        print(msg_data)
 
 
 class BaseLEDConnectorDataReceiver(AbstractDataReceiver):

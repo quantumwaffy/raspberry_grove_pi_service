@@ -10,7 +10,9 @@ if __name__ == "__main__":
         consts.Sensor.sound: 1,
         consts.Sensor.light: 2,
     }
-    receiver_sensors_pin_data: dict[consts.Sensor, int] = sender_sensors_pin_data
+    receiver_sensors_pin_data: dict[consts.Sensor, int] = {
+        consts.Sensor.led: 6,
+    }
 
     ws_connect_sender_checker_pin: int = 3
     ws_connect_receiver_checker_pin: int = 2
