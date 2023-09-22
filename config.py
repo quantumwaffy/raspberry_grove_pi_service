@@ -10,6 +10,8 @@ class AppConfig(core_mixins.EnvSettingsMixin):
     SEND_INTERVAL: float = 3
     RESTART_INTERVAL_TO_SEND: float = 60
     RESTART_INTERVAL_TO_RECEIVE: float = 60
+    DEFAULT_INIT_SENSORS_DELAY: float = 1
+    DEFAULT_INIT_INTERACTION_DELAY: float = 3
 
 
 class Config(BaseSettings):

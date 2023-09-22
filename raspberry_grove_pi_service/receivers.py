@@ -13,10 +13,10 @@ class AbstractDataReceiver(interactors.AbstractInteractor):
     _data_handler_cls = data_handlers.BaseRunner
 
     async def _run(self, ws: websockets.WebSocketClientProtocol) -> None:
-        msg: str = await ws.recv()
-        msg_data: schemas.RunnerData = schemas.RunnerData(**json.loads(msg))
-        self._data_handler.execute()
-        print(msg_data)
+        msg_text: str = await ws.recv()
+        msg: schemas.RunnerData = schemas.RunnerData(**json.loads(msg_text))
+        self._data_handler.execute(msg=msg)
+        print(msg)
 
 
 class BaseLEDConnectorDataReceiver(AbstractDataReceiver):

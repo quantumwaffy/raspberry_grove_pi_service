@@ -5,6 +5,7 @@ from typing import Type
 
 import websockets
 
+from config import CONFIG
 from logger import logger
 
 from . import consts, data_handlers, ws_connectors
@@ -15,7 +16,7 @@ class AbstractInteractor(abc.ABC):
         self._ws_connector: ws_connectors.AbstractWSConnector = self._ws_connector_cls(ws_connected_pin)
         self._data_handler: data_handlers.AbstractSensorsHandler = self._data_handler_cls(sensor_pins)
         self._sensor_pins: dict[consts.Sensor, int] = sensor_pins
-        time.sleep(1)
+        time.sleep(CONFIG.APP.DEFAULT_INIT_SENSORS_DELAY)
 
     @property
     @abc.abstractmethod

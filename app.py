@@ -1,6 +1,8 @@
 import asyncio
 import multiprocessing
+import time
 
+from config import CONFIG
 from raspberry_grove_pi_service import consts, receivers, senders
 
 if __name__ == "__main__":
@@ -20,6 +22,7 @@ if __name__ == "__main__":
     sender: senders.BaseLEDConnectorDataSender = senders.BaseLEDConnectorDataSender(
         ws_connect_sender_checker_pin, sender_sensors_pin_data
     )
+    time.sleep(CONFIG.APP.DEFAULT_INIT_INTERACTION_DELAY)
     receiver: receivers.BaseLEDConnectorDataReceiver = receivers.BaseLEDConnectorDataReceiver(
         ws_connect_receiver_checker_pin, receiver_sensors_pin_data
     )
