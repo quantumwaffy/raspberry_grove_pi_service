@@ -6,3 +6,9 @@ class Sensor(StrEnum):
     humidity = "hum"
     sound = "snd"
     light = "lght"
+    led = "led"
+
+
+class SensorState(StrEnum):
+    on = "on"
+    off = "off"

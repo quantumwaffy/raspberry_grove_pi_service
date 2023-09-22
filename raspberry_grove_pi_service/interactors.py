@@ -1,18 +1,21 @@
 import abc
 import asyncio
+import time
 from typing import Type
 
 import websockets
 
 from logger import logger
 
-from . import consts, ws_connectors
+from . import consts, data_handlers, ws_connectors
 
 
 class AbstractInteractor(abc.ABC):
     def __init__(self, ws_connected_pin: int, sensor_pins: dict[consts.Sensor, int]) -> None:
         self._ws_connector: ws_connectors.AbstractWSConnector = self._ws_connector_cls(ws_connected_pin)
+        self._data_handler: data_handlers.AbstractSensorsHandler = self._data_handler_cls(sensor_pins)
         self._sensor_pins: dict[consts.Sensor, int] = sensor_pins
+        time.sleep(1)
 
     @property
     @abc.abstractmethod
@@ -31,6 +34,11 @@ class AbstractInteractor(abc.ABC):
 
     @abc.abstractmethod
     async def _run(self, ws: websockets.WebSocketClientProtocol) -> None:
+        ...
+
+    @property
+    @abc.abstractmethod
+    def _data_handler_cls(self) -> Type[data_handlers.AbstractSensorsHandler]:
         ...
 
     async def run(self) -> None:

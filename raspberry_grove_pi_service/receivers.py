@@ -1,24 +1,22 @@
-import time
+import json
 
 import websockets
 
 from config import CONFIG
 from logger import logger
 
-from . import consts, interactors, ws_connectors
+from . import data_handlers, interactors, schemas, ws_connectors
 
 
 class AbstractDataReceiver(interactors.AbstractInteractor):
     _ws_url = CONFIG.APP.SERVER_URL_TO_RECEIVE
     _restart_interval = CONFIG.APP.RESTART_INTERVAL_TO_RECEIVE
-
-    def __init__(self, ws_connected_pin: int, sensor_pins: dict[consts.Sensor, int]) -> None:
-        super().__init__(ws_connected_pin, sensor_pins)
-        time.sleep(1)
+    _data_handler_cls = data_handlers.BaseRunner
 
     async def _run(self, ws: websockets.WebSocketClientProtocol) -> None:
         msg: str = await ws.recv()
-        logger.info(msg)
+        msg_data: schemas.RunnerData = schemas.RunnerData(**json.loads(msg))
+        logger.info(msg_data)
 
 
 class BaseLEDConnectorDataReceiver(AbstractDataReceiver):
